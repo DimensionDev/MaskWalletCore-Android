@@ -7,7 +7,7 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
-      
+
 jobs:
   build:
 
@@ -22,10 +22,10 @@ jobs:
       - name: add rust target
         run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
       - name: build
-        run: ./gradlew clean build
+        run: ./gradlew :MaskWalletCore:build
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
+          api-level: 29
           script: ./gradlew :MaskWalletCore:connectedCheck
 
