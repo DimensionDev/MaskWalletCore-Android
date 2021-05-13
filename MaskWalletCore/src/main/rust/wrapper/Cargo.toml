@@ -11,6 +11,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 jni = "0.16.0"
-target-mobile = { path = "../MaskWalletCore/target-mobile" }
+interface = { path = "../MaskWalletCore/interface" }
 
 [workspace]

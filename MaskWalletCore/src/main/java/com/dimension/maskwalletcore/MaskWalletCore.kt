@@ -4,5 +4,5 @@ internal object MaskWalletCore {
     init {
         System.loadLibrary("maskwalletdroid")
     }
-    external fun test(value: String): String
+    external fun request(value: ByteArray): ByteArray
 }
