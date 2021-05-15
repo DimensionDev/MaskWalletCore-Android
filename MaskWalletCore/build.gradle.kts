@@ -39,7 +39,11 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.16.0"
+        if (osdetector.os == "osx") {
+            artifact = "com.google.protobuf:protoc:3.16.0:osx-x86_64"
+        } else {
+            artifact = "com.google.protobuf:protoc:3.16.0"
+        }
     }
     generateProtoTasks {
         all().forEach { task ->
