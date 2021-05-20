@@ -5,6 +5,7 @@ plugins {
     id("kotlin-android")
     id("org.mozilla.rust-android-gradle.rust-android") version "0.8.6"
     id("com.google.protobuf") version "0.8.16"
+    `maven-publish`
 }
 
 android {
@@ -39,10 +40,10 @@ dependencies {
 
 protobuf {
     protoc {
-        if (osdetector.os == "osx") {
-            artifact = "com.google.protobuf:protoc:3.17.0:osx-x86_64"
+        artifact = if (osdetector.os == "osx") {
+            "com.google.protobuf:protoc:3.17.0:osx-x86_64"
         } else {
-            artifact = "com.google.protobuf:protoc:3.17.0"
+            "com.google.protobuf:protoc:3.17.0"
         }
     }
     generateProtoTasks {
@@ -75,3 +76,18 @@ task("protoClean") {
 
 tasks.getByName("preBuild").dependsOn("cargoBuild")
 tasks.getByName("clean").dependsOn("cargoClean", "protoClean")
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = "com.dimension.maskwallet"
+                artifactId = "maskwalletcore"
+                version = "0.1.0"
+
+                from(components["release"])
+            }
+        }
+    }
+}
