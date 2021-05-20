@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-javalite:3.16.0")
+    implementation("com.google.protobuf:protobuf-javalite:3.17.0")
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
@@ -40,9 +40,9 @@ dependencies {
 protobuf {
     protoc {
         if (osdetector.os == "osx") {
-            artifact = "com.google.protobuf:protoc:3.16.0:osx-x86_64"
+            artifact = "com.google.protobuf:protoc:3.17.0:osx-x86_64"
         } else {
-            artifact = "com.google.protobuf:protoc:3.16.0"
+            artifact = "com.google.protobuf:protoc:3.17.0"
         }
     }
     generateProtoTasks {
