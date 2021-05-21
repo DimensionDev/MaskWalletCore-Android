@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.protobuf.gradle.*
 
 plugins {
@@ -7,6 +8,12 @@ plugins {
     id("com.google.protobuf") version "0.8.16"
     `maven-publish`
 }
+
+val protobufVersion = "3.17.0"
+
+val maskWalletProtoSource = "$projectDir/src/main/rust/MaskWalletCore/chain-common/proto"
+val maskWalletProtoTarget = "$buildDir/generated/proto"
+val maskWalletProtoPackage = "com.dimension.maskwalletcore.proto"
 
 android {
     compileSdkVersion(30)
@@ -25,14 +32,14 @@ android {
     sourceSets {
         getByName("main") {
             proto {
-                srcDir("src/main/rust/MaskWalletCore/chain-common/proto")
+                srcDir(maskWalletProtoTarget)
             }
         }
     }
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-javalite:3.17.0")
+    implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
@@ -41,9 +48,9 @@ dependencies {
 protobuf {
     protoc {
         artifact = if (osdetector.os == "osx") {
-            "com.google.protobuf:protoc:3.17.0:osx-x86_64"
+            "com.google.protobuf:protoc:$protobufVersion:osx-x86_64"
         } else {
-            "com.google.protobuf:protoc:3.17.0"
+            "com.google.protobuf:protoc:$protobufVersion"
         }
     }
     generateProtoTasks {
@@ -64,21 +71,51 @@ cargo {
     profile = "release"
 }
 
-task<Exec>("cargoClean") {
-    executable = "cargo"
-    args("clean")
-    workingDir("$projectDir/${cargo.module}")
+tasks {
+    val generateMaskProto by registering {
+        val source = File(maskWalletProtoSource)
+        val target = File(maskWalletProtoTarget)
+        source.copyRecursively(target, overwrite = true)
+        updateJavaProto(target)
+    }
+    val protoClean by registering {
+        delete(protobuf.protobuf.generatedFilesBaseDir)
+        delete(maskWalletProtoTarget)
+    }
+    val cargoClean by registering(Exec::class) {
+        executable = "cargo"
+        args("clean")
+        workingDir("$projectDir/${cargo.module}")
+    }
 }
 
-task("protoClean") {
-    delete(protobuf.protobuf.generatedFilesBaseDir)
+fun updateJavaProto(file: File) {
+    if (file.isDirectory) {
+        file.listFiles()?.forEach {
+            updateJavaProto(it)
+        }
+    } else {
+        file.appendText("${System.lineSeparator()}option java_package = \"$maskWalletProtoPackage\";")
+    }
 }
-
-tasks.getByName("preBuild").dependsOn("cargoBuild")
-tasks.getByName("clean").dependsOn("cargoClean", "protoClean")
-
 
 afterEvaluate {
+    tasks {
+        val cargoBuild = named("cargoBuild")
+        val generateMaskProto = named("generateMaskProto")
+        val protoClean = named("protoClean")
+        val cargoClean = named("cargoClean")
+
+        preBuild.dependsOn(
+            cargoBuild,
+            generateMaskProto
+        )
+        clean.dependsOn(
+            protoClean,
+            cargoClean
+        )
+    }
+
     publishing {
         publications {
             create<MavenPublication>("release") {

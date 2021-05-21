@@ -1,8 +1,9 @@
 package com.dimension.maskwalletcore
 
-import api.Api
-import api.Base
-import api.StoredKey
+import com.dimension.maskwalletcore.proto.Api
+import com.dimension.maskwalletcore.proto.Base
+import com.dimension.maskwalletcore.proto.StoredKey
+
 
 internal object MaskWalletCore {
     init {
