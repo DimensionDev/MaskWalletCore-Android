@@ -5,7 +5,6 @@ pub mod android {
     use self::jni::objects::{JClass};
     use self::jni::JNIEnv;
     use jni::sys::{jbyteArray};
-    use std::slice;
 
     #[no_mangle]
     pub unsafe extern "system" fn Java_com_dimension_maskwalletcore_MaskWalletCore_request(
