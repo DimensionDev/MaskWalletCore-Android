@@ -72,11 +72,19 @@ cargo {
 }
 
 tasks {
-    val generateMaskProto by registering {
-        val source = File(maskWalletProtoSource)
-        val target = File(maskWalletProtoTarget)
-        source.copyRecursively(target, overwrite = true)
-        updateJavaProto(target)
+    val copyMaskProto by registering {
+        doFirst {
+            val source = File(maskWalletProtoSource)
+            val target = File(maskWalletProtoTarget)
+            source.copyRecursively(target, overwrite = true)
+            updateProtoJavaPackage(target)
+        }
+    }
+    val updateProtoVisibility by registering {
+        doFirst {
+            val source = File(protobuf.protobuf.generatedFilesBaseDir)
+            updateProtoJavaVisibility(source)
+        }
     }
     val protoClean by registering {
         delete(protobuf.protobuf.generatedFilesBaseDir)
@@ -87,12 +95,25 @@ tasks {
         args("clean")
         workingDir("$projectDir/${cargo.module}")
     }
+    build.dependsOn(updateProtoVisibility)
 }
 
-fun updateJavaProto(file: File) {
+fun updateProtoJavaVisibility(file: File) {
     if (file.isDirectory) {
         file.listFiles()?.forEach {
-            updateJavaProto(it)
+            updateProtoJavaVisibility(it)
+        }
+    } else {
+        file.readText().replace("public final class", "final class").let {
+            file.writeText(it)
+        }
+    }
+}
+
+fun updateProtoJavaPackage(file: File) {
+    if (file.isDirectory) {
+        file.listFiles()?.forEach {
+            updateProtoJavaPackage(it)
         }
     } else {
         file.appendText("${System.lineSeparator()}option java_package = \"$maskWalletProtoPackage\";")
@@ -102,13 +123,13 @@ fun updateJavaProto(file: File) {
 afterEvaluate {
     tasks {
         val cargoBuild = named("cargoBuild")
-        val generateMaskProto = named("generateMaskProto")
+        val copyMaskProto = named("copyMaskProto")
         val protoClean = named("protoClean")
         val cargoClean = named("cargoClean")
 
         preBuild.dependsOn(
             cargoBuild,
-            generateMaskProto
+            copyMaskProto
         )
         clean.dependsOn(
             protoClean,
