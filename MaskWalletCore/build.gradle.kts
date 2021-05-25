@@ -4,7 +4,7 @@ import com.google.protobuf.gradle.*
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("org.mozilla.rust-android-gradle.rust-android")
+    id("org.mozilla.rust-android-gradle.rust-android") version "0.8.6"
     id("com.google.protobuf") version "0.8.16"
     `maven-publish`
 }
@@ -23,8 +23,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        setSourceCompatibility(JavaVersion.VERSION_1_8)
+        setTargetCompatibility(JavaVersion.VERSION_1_8)
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -36,7 +36,6 @@ android {
             }
         }
     }
-    ndkVersion = "22.1.7171670"
 }
 
 dependencies {
@@ -125,8 +124,8 @@ fun updateProtoJavaVisibility(file: File) {
                 }
             "kt" -> file
                 .readText()
-                .replace("^inline fun".toRegex(), "internal inline fun")
-                .replace("^object ".toRegex(), "internal object ")
+                .replace("inline fun", "internal inline fun")
+                .replace("object ", "internal object ")
                 .let {
                     file.writeText(it)
                 }
