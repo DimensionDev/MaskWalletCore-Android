@@ -1,18 +1,18 @@
-# MaskWallet-Android
+# MaskWalletCore-Android
+![Build Status](https://github.com/DimensionDev/MaskWalletCore-Android/workflows/Android/badge.svg)
 
-# Requirement
-## Rust target
-```
-rustup target add armv7-linux-androideabi   # for arm
-rustup target add i686-linux-android        # for x86
-rustup target add aarch64-linux-android     # for arm64
-rustup target add x86_64-linux-android      # for x86_64
-```
-## Android toolchain
-ndk
 
-# Build guide
+# Development
+
+## Requirement
+- Rust target
 ```
-git clone --recurse-submodules git@github.com:DimensionDev/MaskWallet-Android.git
+rustup target add armv7-linux-androideabi i686-linux-android aarch64-linux-android x86_64-linux-android
+```
+- Android NDK
+
+## Build guide
+```
+git clone --recurse-submodules git@github.com:DimensionDev/MaskWalletCore-Android.git
 ./gradlew :MaskWalletCore:build
 ```
