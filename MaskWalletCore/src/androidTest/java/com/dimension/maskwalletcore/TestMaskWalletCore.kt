@@ -41,15 +41,4 @@ class TestMaskWalletCore {
         )
         assertEquals(key.hash, restoredKey.hash)
     }
-
-    @Test
-    fun testWalletRestoreByPrivateKey() {
-        val password = "123456"
-        val coinType = CoinType.Ethereum
-        val (key, _) = WalletKey.create(password = password)
-        val privateKey = key.exportPrivateKey(coinType, password)
-        val restoredKey = WalletKey.fromPrivateKey(privateKey, "test", coinType, password)
-        assertEquals(restoredKey.hash, key.hash)
-    }
-
 }
