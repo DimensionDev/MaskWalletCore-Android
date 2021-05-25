@@ -23,11 +23,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        setSourceCompatibility(JavaVersion.VERSION_11)
-        setTargetCompatibility(JavaVersion.VERSION_11)
+        setSourceCompatibility(JavaVersion.VERSION_1_8)
+        setTargetCompatibility(JavaVersion.VERSION_1_8)
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
     sourceSets {
         getByName("main") {
