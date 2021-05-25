@@ -31,10 +31,14 @@ class WalletKey private constructor(
             }
         }
 
-        fun fromMnemonic(value: String): WalletKey {
+        fun fromMnemonic(
+            mnemonic: String,
+            password: String,
+        ): WalletKey {
             val response = MaskWalletCore.call {
                 paramImportMnemonic = importMnemonicStoredKeyParam {
-                    mnemonic = value
+                    this.mnemonic = mnemonic
+                    this.password = password
                 }
             }.respImportMnemonic.storedKey
             return WalletKey(response)
