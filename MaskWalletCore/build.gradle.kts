@@ -9,11 +9,11 @@ plugins {
     `maven-publish`
 }
 
-val protobufVersion = "3.17.0"
+val protobufVersion = "3.17.1"
 
 val maskWalletProtoSource = "$projectDir/src/main/rust/MaskWalletCore/chain-common/proto"
 val maskWalletProtoTarget = "$buildDir/generated/proto"
-val maskWalletProtoPackage = "com.dimension.maskwalletcore.proto"
+val maskWalletProtoPackage = "com.dimension.maskwalletcore"
 
 android {
     compileSdkVersion(30)
@@ -23,11 +23,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        setSourceCompatibility(JavaVersion.VERSION_1_8)
-        setTargetCompatibility(JavaVersion.VERSION_1_8)
+        setSourceCompatibility(JavaVersion.VERSION_11)
+        setTargetCompatibility(JavaVersion.VERSION_11)
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     sourceSets {
         getByName("main") {
@@ -39,7 +39,9 @@ android {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion") {
+        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
+    }
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
@@ -56,6 +58,9 @@ protobuf {
     generateProtoTasks {
         all().forEach { task ->
             task.plugins {
+                create("kotlin") {
+                    option("lite")
+                }
                 create("java") {
                     option("lite")
                 }
@@ -95,8 +100,14 @@ tasks {
         args("clean")
         workingDir("$projectDir/${cargo.module}")
     }
-    build.dependsOn(updateProtoVisibility)
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        dependsOn(updateProtoVisibility)
+    }
+    withType<JavaCompile> {
+        dependsOn(updateProtoVisibility)
+    }
 }
+
 
 fun updateProtoJavaVisibility(file: File) {
     if (file.isDirectory) {
@@ -104,8 +115,20 @@ fun updateProtoJavaVisibility(file: File) {
             updateProtoJavaVisibility(it)
         }
     } else {
-        file.readText().replace("public final class", "final class").let {
-            file.writeText(it)
+        when (file.extension) {
+            "java" -> file
+                .readText()
+                .replace("public final class", "final class")
+                .let {
+                    file.writeText(it)
+                }
+            "kt" -> file
+                .readText()
+                .replace("inline fun", "internal inline fun")
+                .replace("object ", "internal object ")
+                .let {
+                    file.writeText(it)
+                }
         }
     }
 }

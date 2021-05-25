@@ -1,10 +1,5 @@
 package com.dimension.maskwalletcore
 
-import com.dimension.maskwalletcore.proto.Api
-import com.dimension.maskwalletcore.proto.Base
-import com.dimension.maskwalletcore.proto.StoredKey
-
-
 internal object MaskWalletCore {
     init {
         System.loadLibrary("maskwalletdroid")
@@ -23,23 +18,20 @@ enum class CoinType {
     }
 }
 
-class StoredKey(
+class PrivateKey private constructor(
     private val storedKey: Base.StoredKeyInfo
 ) {
     companion object {
-        fun fromMnemonic(value: String): com.dimension.maskwalletcore.StoredKey {
-            val request = Api.MWRequest.newBuilder()
-                .setParamImportMnemonic(
-                    StoredKey.ImportMnemonicStoredKeyParam.newBuilder()
-                        .setMnemonic(value)
-                        .build()
-                )
-                .build()
-                .toByteArray()
+        fun fromMnemonic(value: String): PrivateKey {
+            val request = mWRequest {
+                paramImportMnemonic = importMnemonicStoredKeyParam {
+                    mnemonic = value
+                }
+            }.toByteArray()
             val response = MaskWalletCore.request(request).let {
                 Api.MWResponse.parseFrom(it)
             }.respImportMnemonic.storedKey
-            return StoredKey(response)
+            return PrivateKey(response)
         }
 
         fun fromJson(
@@ -47,23 +39,19 @@ class StoredKey(
             name: String,
             coinType: CoinType,
             password: String,
-        ): com.dimension.maskwalletcore.StoredKey {
-            val request = Api.MWRequest.newBuilder()
-                .setParamImportJson(
-                    StoredKey.ImportJSONStoredKeyParam.newBuilder()
-                        .setJson(json)
-                        .setPassword(password)
-                        .setName(name)
-                        .setCoin(coinType.toCoin())
-                        .build()
-                )
-                .build()
-                .toByteArray()
-
+        ): PrivateKey {
+            val request = mWRequest {
+                paramImportJson = importJSONStoredKeyParam {
+                    this.json = json
+                    this.password = password
+                    this.name = name
+                    this.coin = coinType.toCoin()
+                }
+            }.toByteArray()
             val response = MaskWalletCore.request(request).let {
                 Api.MWResponse.parseFrom(it)
             }.respImportJson.storedKey
-            return StoredKey(response)
+            return PrivateKey(response)
         }
 
         fun fromPrivateKey(
@@ -71,22 +59,19 @@ class StoredKey(
             name: String,
             coinType: CoinType,
             password: String,
-        ): com.dimension.maskwalletcore.StoredKey {
-            val request = Api.MWRequest.newBuilder()
-                .setParamImportPrivateKey(
-                    StoredKey.ImportPrivateStoredKeyParam.newBuilder()
-                        .setPrivateKey(privateKey)
-                        .setPassword(password)
-                        .setName(name)
-                        .setCoin(coinType.toCoin())
-                        .build()
-                )
-                .build()
-                .toByteArray()
+        ): PrivateKey {
+            val request = mWRequest {
+                paramImportPrivateKey = importPrivateStoredKeyParam {
+                    this.privateKey = privateKey
+                    this.password = password
+                    this.name = name
+                    this.coin = coinType.toCoin()
+                }
+            }.toByteArray()
             val response = MaskWalletCore.request(request).let {
                 Api.MWResponse.parseFrom(it)
             }.respImportPrivateKey.storedKey
-            return StoredKey(response)
+            return PrivateKey(response)
         }
     }
 }
