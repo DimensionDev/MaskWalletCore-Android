@@ -172,61 +172,60 @@ ext {
     }
 }
 
-afterEvaluate {
-    publishing {
-        signing {
-            sign(publishing.publications)
-        }
-        repositories {
-            maven {
-                val releasesRepoUrl =
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                val snapshotsRepoUrl =
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                url = if (version.toString().endsWith("SNAPSHOT")) {
-                    uri(snapshotsRepoUrl)
-                } else {
-                    uri(releasesRepoUrl)
-                }
-                credentials {
-                    username = project.ext.get("ossrhUsername").toString()
-                    password = project.ext.get("ossrhPassword").toString()
-                }
+publishing {
+    signing {
+        sign(publishing.publications)
+    }
+    repositories {
+        maven {
+            val releasesRepoUrl =
+                "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotsRepoUrl =
+                "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = if (version.toString().endsWith("SNAPSHOT")) {
+                uri(snapshotsRepoUrl)
+            } else {
+                uri(releasesRepoUrl)
+            }
+            credentials {
+                username = project.ext.get("ossrhUsername").toString()
+                password = project.ext.get("ossrhPassword").toString()
             }
         }
+    }
+    afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 groupId = "io.github.dimensiondev"
                 artifactId = "maskwalletcore"
                 version = "0.1.0"
 
-                from(components["release"])
-            }
-        }
-        publications.withType<MavenPublication> {
-            pom {
-                name.set("MaskWalletCore")
-                description.set("MaskWalletCore Android port")
-                url.set("https://github.com/DimensionDev/MaskWalletCore-Android")
-
-                licenses {
-                    license {
-                        name.set("MIT")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("Tlaster")
-                        name.set("James Tlaster")
-                        email.set("tlaster@outlook.com")
-                    }
-                }
-                scm {
+                pom {
+                    name.set("MaskWalletCore")
+                    description.set("MaskWalletCore Android port")
                     url.set("https://github.com/DimensionDev/MaskWalletCore-Android")
-                    connection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
-                    developerConnection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
+
+                    licenses {
+                        license {
+                            name.set("MIT")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("Tlaster")
+                            name.set("James Tlaster")
+                            email.set("tlaster@outlook.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/DimensionDev/MaskWalletCore-Android")
+                        connection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
+                        developerConnection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
+                    }
                 }
+
+                from(components["release"])
             }
         }
     }

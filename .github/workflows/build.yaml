@@ -24,10 +24,13 @@ jobs:
       - name: add rust target
         run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
       - name: build
-        run: ./gradlew :MaskWalletCore:build
+        run: ./gradlew :maskwalletcore:build
       - name: run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: ./gradlew :MaskWalletCore:connectedCheck
+          script: ./gradlew :maskwalletcore:connectedCheck
+      - name: Publishing
+        if: startsWith(github.ref, 'refs/tags/')
+        run: ./gradlew :maskwalletcore:publish
 
