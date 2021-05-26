@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.protobuf.gradle.*
+import java.util.Properties
 
 plugins {
     id("com.android.library")
@@ -7,6 +8,7 @@ plugins {
     id("org.mozilla.rust-android-gradle.rust-android") version "0.8.6"
     id("com.google.protobuf") version "0.8.16"
     `maven-publish`
+    id("signing")
 }
 
 val protobufVersion = "3.17.1"
@@ -106,8 +108,18 @@ tasks {
     withType<JavaCompile> {
         dependsOn(updateProtoVisibility)
     }
+    afterEvaluate {
+        val cargoBuild = named("cargoBuild")
+        preBuild.dependsOn(
+            cargoBuild,
+            copyMaskProto
+        )
+        clean.dependsOn(
+            protoClean,
+            cargoClean
+        )
+    }
 }
-
 
 fun updateProtoJavaVisibility(file: File) {
     if (file.isDirectory) {
@@ -143,31 +155,78 @@ fun updateProtoJavaPackage(file: File) {
     }
 }
 
-afterEvaluate {
-    tasks {
-        val cargoBuild = named("cargoBuild")
-        val copyMaskProto = named("copyMaskProto")
-        val protoClean = named("protoClean")
-        val cargoClean = named("cargoClean")
-
-        preBuild.dependsOn(
-            cargoBuild,
-            copyMaskProto
-        )
-        clean.dependsOn(
-            protoClean,
-            cargoClean
-        )
+ext {
+    val publishPropFile = rootProject.file("publish.properties")
+    if (publishPropFile.exists()) {
+        Properties().apply {
+            load(publishPropFile.inputStream())
+        }.forEach { name, value ->
+            set(name.toString(), value)
+        }
+    } else {
+        set("signing.keyId", System.getenv("SIGNING_KEY_ID"))
+        set("signing.password", System.getenv("SIGNING_PASSWORD"))
+        set("signing.secretKeyRingFile", System.getenv("SIGNING_SECRET_KEY_RING_FILE"))
+        set("ossrhUsername", System.getenv("OSSRH_USERNAME"))
+        set("ossrhPassword", System.getenv("OSSRH_PASSWORD"))
     }
+}
 
+afterEvaluate {
     publishing {
+        signing {
+            sign(publishing.publications)
+        }
+        repositories {
+            maven {
+                val releasesRepoUrl =
+                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                val snapshotsRepoUrl =
+                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = if (version.toString().endsWith("SNAPSHOT")) {
+                    uri(snapshotsRepoUrl)
+                } else {
+                    uri(releasesRepoUrl)
+                }
+                credentials {
+                    username = project.ext.get("ossrhUsername").toString()
+                    password = project.ext.get("ossrhPassword").toString()
+                }
+            }
+        }
         publications {
             create<MavenPublication>("release") {
-                groupId = "com.dimension.maskwallet"
+                groupId = "io.github.dimensiondev"
                 artifactId = "maskwalletcore"
                 version = "0.1.0"
 
                 from(components["release"])
+            }
+        }
+        publications.withType<MavenPublication> {
+            pom {
+                name.set("MaskWalletCore")
+                description.set("MaskWalletCore Android port")
+                url.set("https://github.com/DimensionDev/MaskWalletCore-Android")
+
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("Tlaster")
+                        name.set("James Tlaster")
+                        email.set("tlaster@outlook.com")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/DimensionDev/MaskWalletCore-Android")
+                    connection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
+                    developerConnection.set("scm:git:git://github.com/DimensionDev/MaskWalletCore-Android.git")
+                }
             }
         }
     }

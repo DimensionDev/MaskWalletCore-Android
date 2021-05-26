@@ -1,3 +1,3 @@
-[submodule "MaskWalletCore/src/main/rust/MaskWalletCore"]
-	path = MaskWalletCore/src/main/rust/MaskWalletCore
-	url = https://github.com/DimensionDev/MaskWalletCore.git
+[submodule "maskwalletcore/src/main/rust/MaskWalletCore"]
+	path = maskwalletcore/src/main/rust/MaskWalletCore
+	url = git@github.com:DimensionDev/MaskWalletCore.git

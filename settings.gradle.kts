@@ -7,6 +7,6 @@ pluginManagement {
 }
 
 
-rootProject.name = "MaskWallet"
+rootProject.name = "MaskWalletCore"
 include(":sample")
-include(":MaskWalletCore")
+include(":maskwalletcore")
