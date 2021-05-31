@@ -49,11 +49,13 @@ class WalletKey private constructor(
             name: String,
             coinType: CoinType,
             password: String,
+            keyStoreJsonPassword: String,
         ): WalletKey {
             val response = MaskWalletCore.call {
                 paramImportJson = importJSONStoredKeyParam {
                     this.json = json
                     this.password = password
+                    this.keyStoreJsonPassword = keyStoreJsonPassword
                     this.name = name
                     this.coin = coinType.toCoin()
                 }
@@ -146,6 +148,8 @@ class WalletKey private constructor(
         get() = storedKey.hash
     val type: WalletKeyType
         get() = storedKey.type.toKeyType()
+    val data: ByteArray
+        get() = storedKey.data.toByteArray()
     val accountCount: Int
         get() = MaskWalletCore.call {
             paramGetStoredKeyAccountCount = getStoredKeyAccountCountParam {
