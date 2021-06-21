@@ -150,41 +150,6 @@ class WalletKey private constructor(
         get() = storedKey.type.toKeyType()
     val data: ByteArray
         get() = storedKey.data.toByteArray()
-    val accountCount: Int
-        get() = MaskWalletCore.call {
-            paramGetStoredKeyAccountCount = getStoredKeyAccountCountParam {
-                this.storedKeyData = storedKey.data
-            }
-        }.respGetStoredKeyAccountCount.count
-    val accounts: List<WalletAccount>
-        get() = MaskWalletCore.call {
-            paramGetStoredKeyAllAccounts = getStoredKeyAllAccountParam {
-                this.storedKeyData = storedKey.data
-            }
-        }.respGetStoredKeyAllAccounts.accountsList.map { WalletAccount(it) }
-
-    fun accountOfIndex(
-        index: Int,
-    ): WalletAccount {
-        return MaskWalletCore.call {
-            paramGetStoredKeyAccount = getStoredKeyAccountParam {
-                this.index = index
-            }
-        }.respGetStoredKeyAccount.account.let {
-            WalletAccount(it)
-        }
-    }
-
-    fun accountsOfCoin(
-        coinType: CoinType
-    ): List<WalletAccount> {
-        return MaskWalletCore.call {
-            paramGetStoredKeyAccountsOfCoin = getStoredKeyAccountsOfCoinParam {
-                this.coin = coinType.toCoin()
-                this.storedKeyData = storedKey.data
-            }
-        }.respGetStoredKeyAccountsOfCoin.accountsList.map { WalletAccount(it) }
-    }
 
     fun addNewAccountAtPath(
         coinType: CoinType,
@@ -203,34 +168,6 @@ class WalletKey private constructor(
         }.respCreateAccountOfCoinAtPath.let {
             storedKey = it.storedKey
             WalletAccount(it.account)
-        }
-    }
-
-    fun removeAccountByCoin(
-        coinType: CoinType,
-    ) {
-        MaskWalletCore.call {
-            paramRemoveAccountsOfCoin = removeStoredKeyAccountOfCoinParam {
-                this.coin = coinType.toCoin()
-                this.storedKeyData = storedKey.data
-            }
-        }.respRemoveAccountOfCoin.storedKey.let {
-            storedKey = it
-        }
-    }
-
-    fun removeAccountByAddress(
-        address: String,
-        coinType: CoinType,
-    ) {
-        MaskWalletCore.call {
-            paramRemoveAccountOfAddress = removeStoredKeyAccountOfAddressParam {
-                this.address = address
-                this.coin = coinType.toCoin()
-                this.storedKeyData = storedKey.data
-            }
-        }.respRemoveAccountOfAddress.storedKey.let {
-            storedKey = it
         }
     }
 
@@ -318,22 +255,6 @@ class WalletKey private constructor(
             }
         }.respUpdateKeyStorePassword.storedKey.let {
             storedKey = it
-        }
-    }
-
-    fun updateAccountNameOfAddress(
-        address: String,
-        name: String,
-    ): WalletAccount {
-        return MaskWalletCore.call {
-            paramUpdateStoredKeyAccountName = updateStoredKeyAccountNameOfAddressParam {
-                this.address = address
-                this.name = name
-                this.storedKeyData = storedKey.data
-            }
-        }.respUpdateKeyStoreAccountName.let {
-            storedKey = it.storedKey
-            WalletAccount(it.account)
         }
     }
 

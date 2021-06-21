@@ -11,7 +11,7 @@ plugins {
     id("signing")
 }
 
-val protobufVersion = "3.17.1"
+val protobufVersion = "3.17.3"
 
 val maskWalletProtoSource = "$projectDir/src/main/rust/MaskWalletCore/chain-common/proto"
 val maskWalletProtoTarget = "$buildDir/generated/proto"
@@ -41,9 +41,7 @@ android {
 }
 
 dependencies {
-    implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion") {
-        exclude(group = "com.google.protobuf", module = "protobuf-javalite")
-    }
+    implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
@@ -51,11 +49,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = if (osdetector.os == "osx") {
-            "com.google.protobuf:protoc:$protobufVersion:osx-x86_64"
-        } else {
-            "com.google.protobuf:protoc:$protobufVersion"
-        }
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
     generateProtoTasks {
         all().forEach { task ->
