@@ -31,6 +31,12 @@ class WalletKey private constructor(
             }
         }
 
+        fun generateMnemonic(): String {
+            return MaskWalletCore.call {
+                paramGenerateMnemonic = generateMnemonicParam { }
+            }.respGenerateMnemonic.mnemonic
+        }
+
         fun fromMnemonic(
             mnemonic: String,
             password: String,
@@ -276,7 +282,7 @@ class WalletKey private constructor(
                         this.gasLimit = input.gasLimit
                         this.gasPrice = input.gasPrice
                         this.nonce = input.nonce
-                        this.payload = input.payload
+                        this.payload = ByteString.copyFromUtf8(input.payload)
                         this.toAddress = input.toAddress
                     }
                 }

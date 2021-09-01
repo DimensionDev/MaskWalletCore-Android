@@ -5,7 +5,7 @@ import java.util.Properties
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("org.mozilla.rust-android-gradle.rust-android") version "0.8.6"
+    id("org.mozilla.rust-android-gradle.rust-android") version "0.9.0"
     id("com.google.protobuf") version "0.8.16"
     `maven-publish`
     id("signing")
@@ -18,18 +18,18 @@ val maskWalletProtoTarget = "$buildDir/generated/proto"
 val maskWalletProtoPackage = "com.dimension.maskwalletcore"
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
 
     defaultConfig {
-        minSdkVersion(21)
+        minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        setSourceCompatibility(JavaVersion.VERSION_1_8)
-        setTargetCompatibility(JavaVersion.VERSION_1_8)
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     sourceSets {
         getByName("main") {
@@ -38,6 +38,7 @@ android {
             }
         }
     }
+    ndkVersion = "22.1.7171670"
 }
 
 dependencies {
@@ -192,7 +193,7 @@ publishing {
             create<MavenPublication>("release") {
                 groupId = "io.github.dimensiondev"
                 artifactId = "maskwalletcore"
-                version = "0.2.0"
+                version = "0.3.0"
 
                 pom {
                     name.set("MaskWalletCore")
