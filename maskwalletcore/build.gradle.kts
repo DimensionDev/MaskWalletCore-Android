@@ -131,8 +131,8 @@ fun updateProtoJavaVisibility(file: File) {
                 }
             "kt" -> file
                 .readText()
-                .replace("inline fun", "internal inline fun")
-                .replace("object ", "internal object ")
+                .replace("(?!\\s)inline fun".toRegex(), "internal inline fun")
+                .replace("(?!\\s)object ".toRegex(), "internal object ")
                 .let {
                     file.writeText(it)
                 }
