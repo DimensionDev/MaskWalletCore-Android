@@ -10,5 +10,7 @@ data class EthereumSignInput(
     val nonce: String,
     val payload: String,
     val toAddress: String,
+    val maxInclusionFeePerGas: String,
+    val maxFeePerGas: String,
 ) : WalletSignInput
 

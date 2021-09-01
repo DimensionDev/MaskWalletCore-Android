@@ -284,6 +284,8 @@ class WalletKey private constructor(
                         this.nonce = input.nonce
                         this.payload = ByteString.copyFromUtf8(input.payload)
                         this.toAddress = input.toAddress
+                        this.maxFeePerGas = input.maxFeePerGas
+                        this.maxInclusionFeePerGas = input.maxInclusionFeePerGas
                     }
                 }
                 this.storedKeyData = storedKey.data
