@@ -282,7 +282,7 @@ class WalletKey private constructor(
                         this.gasLimit = input.gasLimit
                         this.gasPrice = input.gasPrice
                         this.nonce = input.nonce
-                        this.payload = ByteString.copyFromUtf8(input.payload)
+                        this.payload = ByteString.copyFrom(input.payload)
                         this.toAddress = input.toAddress
                         this.maxFeePerGas = input.maxFeePerGas
                         this.maxInclusionFeePerGas = input.maxInclusionFeePerGas
