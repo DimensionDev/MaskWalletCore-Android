@@ -211,6 +211,7 @@ class WalletKey private constructor(
                 this.coin = coinType.toCoin()
                 this.derivationPath = derivationPath
                 this.password = password
+                this.storedKeyData = storedKey.data
             }
         }.respExportPrivateKey.privateKey
     }
