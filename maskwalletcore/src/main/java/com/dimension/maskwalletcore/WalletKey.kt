@@ -164,7 +164,7 @@ class WalletKey private constructor(
         password: String,
     ): WalletAccount {
         return MaskWalletCore.call {
-            paramCreateAcccountOfCoinAtPath = createStoredKeyNewAccountAtPathParam {
+            paramCreateAccountOfCoinAtPath = createStoredKeyNewAccountAtPathParam {
                 this.name = name
                 this.password = password
                 this.coin = coinType.toCoin()
@@ -266,16 +266,16 @@ class WalletKey private constructor(
     }
 
     fun sign(
-        address: String,
+        derivationPath: String,
         coinType: CoinType,
         password: String,
         input: WalletSignInput,
     ): SignResult {
         return MaskWalletCore.call {
             paramSignTransaction = signTransactionParam {
-                this.address = address
                 this.coin = coinType.toCoin()
                 this.password = password
+                this.derivationPath = derivationPath
                 when (input) {
                     is EthereumSignInput -> this.signInput = signInput {
                         this.amount = input.amount

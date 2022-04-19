@@ -5,13 +5,13 @@ import java.util.Properties
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("org.mozilla.rust-android-gradle.rust-android") version "0.9.0"
-    id("com.google.protobuf") version "0.8.16"
+    id("org.mozilla.rust-android-gradle.rust-android") version "0.9.2"
+    id("com.google.protobuf") version "0.8.18"
     `maven-publish`
     id("signing")
 }
 
-val protobufVersion = "3.17.3"
+val protobufVersion = "3.20.0"
 
 val maskWalletProtoSource = "$projectDir/src/main/rust/MaskWalletCore/chain-common/proto"
 val maskWalletProtoTarget = "$buildDir/generated/proto"
@@ -41,11 +41,20 @@ android {
     ndkVersion = "22.1.7171670"
 }
 
+// TODO: workaround for https://github.com/google/protobuf-gradle-plugin/issues/540
+fun com.android.build.api.dsl.AndroidSourceSet.proto(action: SourceDirectorySet.() -> Unit) {
+    (this as? ExtensionAware)
+        ?.extensions
+        ?.getByName("proto")
+        ?.let { it as? SourceDirectorySet }
+        ?.apply(action)
+}
+
 dependencies {
     implementation("com.google.protobuf:protobuf-kotlin-lite:$protobufVersion")
     testImplementation("junit:junit:4.+")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
 protobuf {
@@ -131,8 +140,10 @@ fun updateProtoJavaVisibility(file: File) {
                 }
             "kt" -> file
                 .readText()
-                .replace("inline fun", "internal inline fun")
-                .replace("object ", "internal object ")
+                .replace("public inline fun", "internal inline fun")
+                .replace("public object ", "internal object ")
+                .replace("val com.dimension.maskwalletcore.", "internal val com.dimension.maskwalletcore.")
+                .replace("internal internal", "internal")
                 .let {
                     file.writeText(it)
                 }

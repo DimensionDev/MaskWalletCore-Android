@@ -1,7 +1,5 @@
 package com.dimension.maskwalletcore
 
-import com.google.protobuf.ByteString
-
 data class SignResult(
     val encoded: ByteArray,
     val v: Int,

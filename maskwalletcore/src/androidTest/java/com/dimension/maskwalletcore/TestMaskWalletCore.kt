@@ -41,4 +41,20 @@ class TestMaskWalletCore {
         )
         assertEquals(key.hash, restoredKey.hash)
     }
+
+    @Test
+    fun testPersonaCreate() {
+        val password = "123456"
+        val mnemonic = WalletKey.generateMnemonic()
+        val path = "m/44'/60'/0'/0/0"
+        val curveType = CurveType.SECP256K1
+        val key = PersonaKey.create(
+            mnemonic = mnemonic,
+            password = password,
+            path = path,
+            curveType = curveType,
+            option = EncryptionOption(EncryptionOption.Version.V37),
+        )
+        assert(key.identifier.isNotEmpty())
+    }
 }
