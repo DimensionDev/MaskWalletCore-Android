@@ -204,7 +204,7 @@ publishing {
             create<MavenPublication>("release") {
                 groupId = "io.github.dimensiondev"
                 artifactId = "maskwalletcore"
-                version = "0.4.1"
+                version = "0.5.0"
 
                 pom {
                     name.set("MaskWalletCore")
